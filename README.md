@@ -21,6 +21,77 @@ pip install torch tqdm matplotlib seaborn nltk sentencepiece pandas
 
 ## Running the Training Shell Script
 
+
+## Data Preparation Pipeline
+
+Before training the models, you need to prepare the data. Follow these steps in order:
+
+### 1. Download Books (download_books.py)
+
+First, run the script to download books from Project Gutenberg:
+
+```bash
+python download_books.py \
+    --output_dir data/raw \
+    --num_books 100 \
+    --min_length 10000 \
+    --max_length 100000
+```
+
+Arguments:
+- `--output_dir`: Directory to save downloaded books
+- `--num_books`: Number of books to download
+- `--min_length`: Minimum book length (in characters)
+- `--max_length`: Maximum book length (in characters)
+- `--start_index`: (optional) Starting index for book IDs
+- `--timeout`: (optional) Download timeout in seconds
+
+The script will:
+1. Create the output directory if it doesn't exist
+2. Download books from Project Gutenberg
+3. Clean and preprocess the raw text
+4. Save books as individual text files
+5. Generate a metadata.json file with book information
+
+### 2. Process Data (data_processor.py)
+
+After downloading the books, process them into the format required for training:
+
+```bash
+python data_processor.py \
+    --input_dir data/raw \
+    --output_dir data/processed \
+    --train_split 0.8 \
+    --val_split 0.1 \
+    --test_split 0.1 \
+    --chunk_size 512 \
+    --stride 256
+```
+
+Arguments:
+- `--input_dir`: Directory containing raw book files
+- `--output_dir`: Directory to save processed data
+- `--train_split`: Proportion of data for training
+- `--val_split`: Proportion of data for validation
+- `--test_split`: Proportion of data for testing
+- `--chunk_size`: Size of text chunks
+- `--stride`: Stride length for text chunking
+- `--min_length`: (optional) Minimum chunk length
+- `--workers`: (optional) Number of worker processes
+
+The script will:
+1. Read all text files from the input directory
+2. Clean and normalize the text
+3. Split text into chunks with specified size and stride
+4. Split data into train/validation/test sets
+5. Save processed data as JSONL files
+6. Create train.jsonl, val.jsonl, and test.jsonl
+
+### Data Processing Pipeline Output
+
+After running both scripts, you should have the following directory structure:
+
+
 The project includes a shell script (`train_models.sh`) that can train all model types sequentially. To use it:
 
 1. Make the script executable:
