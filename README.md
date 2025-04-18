@@ -26,67 +26,42 @@ pip install torch tqdm matplotlib seaborn nltk sentencepiece pandas
 
 Before training the models, you need to prepare the data. Follow these steps in order:
 
-### 1. Download Books (download_books.py)
+## Data Preparation
 
-First, run the script to download books from Project Gutenberg:
+### 1. Download Books
+First, run the download script to get books from Project Gutenberg:
 
 ```bash
-python download_books.py \
-    --output_dir data/raw \
-    --num_books 100 \
-    --min_length 10000 \
-    --max_length 100000
+python download_books.py
 ```
 
-Arguments:
-- `--output_dir`: Directory to save downloaded books
-- `--num_books`: Number of books to download
-- `--min_length`: Minimum book length (in characters)
-- `--max_length`: Maximum book length (in characters)
-- `--start_index`: (optional) Starting index for book IDs
-- `--timeout`: (optional) Download timeout in seconds
+This will:
+- Download books from different genres (classics, sci-fi, mystery, poetry, philosophy)
+- Save them in `data/raw/` directory
+- Handle download errors automatically
 
-The script will:
-1. Create the output directory if it doesn't exist
-2. Download books from Project Gutenberg
-3. Clean and preprocess the raw text
-4. Save books as individual text files
-5. Generate a metadata.json file with book information
-
-### 2. Process Data (data_processor.py)
-
-After downloading the books, process them into the format required for training:
+### 2. Process Data
+Next, process the downloaded books into training data:
 
 ```bash
 python data_processor.py \
     --input_dir data/raw \
     --output_dir data/processed \
-    --train_split 0.8 \
-    --val_split 0.1 \
-    --test_split 0.1 \
-    --chunk_size 512 \
-    --stride 256
+    --min_length 100 \
+    --max_length 1024
 ```
 
-Arguments:
-- `--input_dir`: Directory containing raw book files
-- `--output_dir`: Directory to save processed data
-- `--train_split`: Proportion of data for training
-- `--val_split`: Proportion of data for validation
-- `--test_split`: Proportion of data for testing
-- `--chunk_size`: Size of text chunks
-- `--stride`: Stride length for text chunking
-- `--min_length`: (optional) Minimum chunk length
-- `--workers`: (optional) Number of worker processes
+This will:
+- Clean and format the text
+- Split into training segments
+- Create three files:
+  - `train.jsonl` (80% of data)
+  - `val.jsonl` (10% of data)
+  - `test.jsonl` (10% of data)
 
-The script will:
-1. Read all text files from the input directory
-2. Clean and normalize the text
-3. Split text into chunks with specified size and stride
-4. Split data into train/validation/test sets
-5. Save processed data as JSONL files
-6. Create train.jsonl, val.jsonl, and test.jsonl
+After these steps, you can proceed with model training.
 
+[Rest of README continues...]
 ### Data Processing Pipeline Output
 
 After running both scripts, you should have the following directory structure:
